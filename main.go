@@ -1,0 +1,75 @@
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"encoding/json"
+	"log"
+)
+ //url https://api.forecast.io/forecast/APIKEY/LATITUDE,LONGITUDE
+type Forecast struct {
+	Latitude  float64   `json:"latitude"`
+	Longitude float64   `json:"longitude"`
+	Timezone  string    `json:"timezone"`
+	Offset    float64   `json:"offset"`
+	Currently DataPoint `json:"currently"`
+	// Minutely  DataBlock `json:"minutely"`
+	// Hourly    DataBlock `json:"hourly"`
+	// Daily     DataBlock `json:"daily"`
+	// Alerts    []alert   `json:"alerts"`
+	// Flags     Flags     `json:"flags"`
+	APICalls  int       `json:"apicalls"`
+	Code      int       `json:"code"`
+}
+type DataPoint struct {
+	Time                   float64 `json:"time"`
+	Summary                string  `json:"summary"`
+	Icon                   string  `json:"icon"`
+	SunriseTime            float64 `json:"sunriseTime"`
+	SunsetTime             float64 `json:"sunsetTime"`
+	PrecipIntensity        float64 `json:"precipIntensity"`
+	PrecipIntensityMax     float64 `json:"precipIntensityMax"`
+	PrecipIntensityMaxTime float64 `json:"precipIntensityMaxTime"`
+	PrecipProbability      float64 `json:"precipProbability"`
+	PrecipType             string  `json:"precipType"`
+	PrecipAccumulation     float64 `json:"precipAccumulation"`
+	Temperature            float64 `json:"temperature"`
+	TemperatureMin         float64 `json:"temperatureMin"`
+	TemperatureMinTime     float64 `json:"temperatureMinTime"`
+	TemperatureMax         float64 `json:"temperatureMax"`
+	TemperatureMaxTime     float64 `json:"temperatureMaxTime"`
+	ApparentTemperature    float64 `json:"apparentTemperature"`
+	DewPoint               float64 `json:"dewPoint"`
+	WindSpeed              float64 `json:"windSpeed"`
+	WindBearing            float64 `json:"windBearing"`
+	CloudCover             float64 `json:"cloudCover"`
+	Humidity               float64 `json:"humidity"`
+	Pressure               float64 `json:"pressure"`
+	Visibility             float64 `json:"visibility"`
+	Ozone                  float64 `json:"ozone"`
+	MoonPhase              float64 `json:"moonPhase"`
+}
+func main() {
+
+	http.HandleFunc("/", handleWeather)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func handleWeather(res http.ResponseWriter, req *http.Request) {
+	var f Forecast
+	result, err := http.Get("https://api.forecast.io/forecast/{API_KEY_HERE}/40.7142,-74.0064")
+	if err != nil {
+		fmt.Println("something went wrong", err)
+		return
+	}
+
+	defer result.Body.Close()
+
+	err = json.NewDecoder(result.Body).Decode(&f)
+
+	if err != nil {
+		fmt.Println("something went wrong", err)
+		return
+	}
+  fmt.Fprintln(res, f)
+}
