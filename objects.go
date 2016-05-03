@@ -8,13 +8,7 @@ type Forecast struct {
 	Timezone  string    `json:"timezone"`
 	Offset    float64   `json:"offset"`
 	Currently DataPoint `json:"currently"`
-	// Minutely  DataBlock `json:"minutely"`
-	// Hourly    DataBlock `json:"hourly"`
-	// Daily     DataBlock `json:"daily"`
-	// Alerts    []alert   `json:"alerts"`
-	// Flags     Flags     `json:"flags"`
-	// APICalls  int       `json:"apicalls"`
-	// Code      int       `json:"code"`
+
 }
 type DataPoint struct {
 	Time                   float64 `json:"time"`
